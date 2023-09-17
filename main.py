@@ -14,8 +14,12 @@ async def ruta_prueba():
 @app.get("/prueba/{id}")
 async def ruta_prueba_2(id:int):
     return {"Hola":"chau",
-            "pruebaaaaaaaaaaaaaaaaaa" : id}
+            "pruebaaaaaa" : id}
 
+
+@app.get("/hola/{id}")
+async def ruta_prueba_2(id:int):
+    return {"HolAAAAAAAAAAAa": id}
 
 @app.get("/sentiment_analysis/{año}")
 async def sentiment_analysis(año:int):
@@ -29,6 +33,6 @@ async def sentiment_analysis(año:int):
         neutros = int(df['cantidad_1'][df['ano']==año].iloc[0])
         positivos = int(df['cantidad_2'][df['ano']==año].iloc[0])
 
-        return {"Negativos": negativos, "Neutros": neutros, "Positivos" : positivos}
+        return {"Negativos ": negativos, "Neutros": neutros, "Positivos" : positivos}
     except Exception as e:
         return {"error", e}
