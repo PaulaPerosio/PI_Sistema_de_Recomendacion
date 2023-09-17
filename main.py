@@ -14,7 +14,7 @@ async def ruta_prueba():
 @app.get("/prueba/{id}")
 async def ruta_prueba_2(id:int):
     return {"Hola":"chau",
-            "prueba" : id}
+            "pruebaaaaaaaaaaaaaaaaaa" : id}
 
 
 @app.get("/sentiment_analysis/{año}")
@@ -24,7 +24,7 @@ async def sentiment_analysis(año:int):
     que se encuentren categorizados con un análisis de sentimiento según el año de lanzamiento.
         Ejemplo de retorno: {Negative = 182, Neutral = 120, Positive = 278}'''
     try:
-        df = pd.read_csv("DataSets/df_sentiment.csv")
+        df = pd.read_json("DataSets/df_sentiment.json", lines=True)
         negativos = int(df['cantidad_0'][df['ano']==año].iloc[0])
         neutros = int(df['cantidad_1'][df['ano']==año].iloc[0])
         positivos = int(df['cantidad_2'][df['ano']==año].iloc[0])
