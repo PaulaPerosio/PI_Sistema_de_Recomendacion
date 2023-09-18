@@ -18,7 +18,7 @@ async def ruta_prueba_2(id:int):
 
 
 @app.get("/hola/{id}")
-async def ruta_prueba_2(id:int):
+async def ruta_prueba_3(id:int):
     return {"HolAAAAAAAAAAAa": id}
 
 
