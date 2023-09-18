@@ -3,6 +3,8 @@ import pandas as pd
 
 app = FastAPI()
 
+#C:\Users\peros\OneDrive\Documentos\Henry\Data Analist\PI 1\venv\Scripts>activate
+#(venv) C:\Users\peros\OneDrive\Documentos\Henry\Data Analist\PI 1>
 #uvicorn main:app --reload
 #http://127.0.0.1:8000
 
@@ -12,7 +14,41 @@ app = FastAPI()
 #git push origin main
 
 
+@app.get("/userdata/")
+async def userdata(user_id : str ):
+    '''Esta funcion devuelve la cantidad de dinero gastado por el usuario, 
+    el porcentaje de recomendación en base a reviews.recommend 
+    y cantidad de items'''
+
+    try:
+        df_1 = pd.read_json("DataSets/df_user_price.json", lines=True)
+        dinero_gastado = df_1['price'][df_1['user_id']==user_id]
+
+        df_2 = pd.read_json("DataSets/df_porc_recomm.json", lines=True)
+        recomendacion = df_2['Recomendacion'][df_2['user_id']==user_id]
+
+        df_3 = pd.read_json("DataSets/df_item_user_group.json", lines=True)
+        cantidad_item_id = df_3['Cantidad_item_id'][df_3['user_id']==user_id]
+
+        
+        # Verifico si el genero existe
+        if dinero_gastado.empty or recomendacion.empty or cantidad_item_id.empty:
+            return {"error": f"No se encontraron resultados para el usuario '{user_id}'."}
+
+        resultado = {
+                     "Usuario": user_id,
+                     "Dinero gastado": dinero_gastado.iloc[0],
+                     "Porcentaje de recomendacion": recomendacion.iloc[0],
+                     "Cantidad de items": cantidad_item_id.iloc[0]
+                    }
+
+        return resultado
+
+    except Exception as e:
+        return {"error": str(e)}
+
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 
 @app.get("/countreviews/")
 async def countReviews(fecha_inicio_str: str, fecha_fin_str: str):
@@ -21,28 +57,31 @@ async def countReviews(fecha_inicio_str: str, fecha_fin_str: str):
 
     try:
         df = pd.read_json("DataSets/df_countreviews.json", lines=True)
+
+        # Verifica el formato 'aaaa-mm-dd'
+        if not fecha_inicio_str.count('-') == fecha_fin_str.count('-') == 2:
+            return {"error": "El formato de fecha es incorrecto. Debe ser YYYY-MM-DD."}
+        
+        # Verifico si las fechan existen
+        if df[df['posted_ok'] == fecha_inicio_str].empty:
+            return {"error": f"La fecha '{fecha_inicio_str}' de inicio no existe."}
+        
+        if df[df['posted_ok'] == fecha_fin_str].empty:
+            return {"error": f"La fecha '{fecha_fin_str}' de fin no existe."}
+
+        condicion = (df['posted_ok'] >= fecha_inicio_str) & (df['posted_ok'] <= fecha_fin_str)
+        recomendacion = df[condicion][df[condicion]['recommend']==True].shape[0]
+        porc_recomendacion = recomendacion / df[condicion].shape[0] * 100
+
+        resultado = {
+                     "Cantidad de usuarios": df[condicion].shape[0],
+                     "Porcentaje de recomendación": round(porc_recomendacion, 2)
+                    }
+        
+        return resultado
+
     except Exception as e:
-        return {"error": f"No se pudo leer el archivo JSON. Detalles: {e}"}
-
-    if not fecha_inicio_str.count('/') == fecha_fin_str.count('/') == 2:
-        return {"error": "El formato de fecha es incorrecto. Debe ser YYYY/MM/DD."}
-
-    partes_inicio = fecha_inicio_str.split('/')
-    partes_fin = fecha_fin_str.split('/')
-
-    if not all(part.isdigit() for part in partes_inicio + partes_fin):
-        return {"error": "Las fechas deben contener solo números."}
-
-    if not (len(partes_inicio[0]) == len(partes_fin[0]) == 4 and 
-            len(partes_inicio[1]) == len(partes_fin[1]) == 2 and 
-            len(partes_inicio[2]) == len(partes_fin[2]) == 2):
-        return {"error": "Las fechas deben estar en el formato YYYY/MM/DD."}
-
-    condicion = (df['posted_ok'] >= fecha_inicio_str) & (df['posted_ok'] <= fecha_fin_str)
-    recomendacion = df[condicion][df[condicion]['recommend']==True].shape[0]
-    porc_recomendacion = recomendacion / df[condicion].shape[0] * 100
-
-    return {"Cantidad de usuarios": df[condicion].shape[0], "Porcentaje de recomendación": round(porc_recomendacion, 2)}
+        return {"error": str(e)}
 
 
 
@@ -92,6 +131,75 @@ async def userforgenre(genero:str):
             "User_URL": url.values.tolist()
                     }
         return resultados
+    
+    except Exception as e:
+        return {"error": str(e)}
+    
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+@app.get("/developer/")
+async def developer(desarrollador:str):
+    '''Esta funcion devuelve la cantidad de items y porcentaje de contenido Free por año 
+    según empresa desarrolladora.'''
+    try:
+        df = pd.read_json("DataSets/df_developer.json", lines=True)
+        desarrollador = desarrollador.lower()  # Convierto a minúsculas
+        
+        # Filtro el DF por desarrollador y verifico si el desarrollador existe
+        df_filtrado = df[df['developer'] == desarrollador]
+
+        if df_filtrado.empty:
+            return {"error": f"No se encontraron resultados para el desarrollador '{desarrollador}'."}
+        
+        # Agrupo por año y cuento los registros
+        registros = df_filtrado.groupby('año')['item_id'].count().reset_index(name='cantidad_item')
+        
+        # Cuento los registros donde el precio = cero
+        free = df_filtrado[df_filtrado['price'] == 0.0].groupby('año')['price'].count().reset_index(name='contenido_free')
+        
+        # Combino ambos DataFrames
+        resultados = registros.merge(free, on='año', how='left')
+        
+        # Calculo el porcentaje de contenido gratuito
+        resultados['porcentaje_free'] = (resultados['contenido_free'] / resultados['cantidad_item']) * 100
+        
+        # Si no hay valores price, le ongo cero
+        resultados['porcentaje_free'].fillna(0, inplace=True)
+        
+        # Diccionario de resultados
+        resultados_dict = {
+            "Año": resultados['año'].tolist(),
+            "Cantidad de Items": resultados['cantidad_item'].tolist(),
+            "Porcentaje de contenido Free": resultados['porcentaje_free'].tolist()
+        }
+        return resultados_dict
+    
+    except Exception as e:
+        return {"error": str(e)}
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+@app.get("/sentiment_analysis/")
+async def sentiment_analysis(año_str:str):
+    '''Esta funcion devuelve una lista con la cantidad de registros de reseñas de usuarios 
+    que se encuentren categorizados con un análisis de sentimiento según el año de lanzamiento.
+    '''
+    try:
+        # Convierto el año a entero
+        año = int(año_str)
+        
+        df = pd.read_json("DataSets/df_sentiment.json", lines=True)
+        
+        # Verifico que el año este en el DataFrame
+        if año not in df['ano'].unique():
+            return {"error": f"No se encontraron registros para el año {año}"}
+
+        negativos = int(df['cantidad_0'][df['ano']==año].iloc[0])
+        neutros = int(df['cantidad_1'][df['ano']==año].iloc[0])
+        positivos = int(df['cantidad_2'][df['ano']==año].iloc[0])
+
+        return {"Negativos": negativos, "Neutros": neutros, "Positivos" : positivos}
     
     except Exception as e:
         return {"error": str(e)}
