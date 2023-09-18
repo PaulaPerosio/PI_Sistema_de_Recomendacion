@@ -99,8 +99,14 @@ async def genre(genero:str):
         if df[df['genres'] == genero].empty:
             return {"error": f"No se encontraron resultados para el género '{genero}'."}
 
-        result = df['ranking'][df['genres'] == genero].iloc[0]
-        return {"Genero": genero, "Ranking": result}
+        result = df['ranking'][df['genres'] == genero]
+
+        resultados = {
+            "Genero": genero,
+            "Ranking": result.shape[0]
+                    }
+        return resultados
+    
     except Exception as e:
         return {"error": str(e)}
     
