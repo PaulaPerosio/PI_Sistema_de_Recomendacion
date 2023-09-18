@@ -6,20 +6,10 @@ app = FastAPI()
 #uvicorn main:app --reload
 #http://127.0.0.1:8000
 
-@app.get("/")
-async def ruta_prueba():
-    return {"Hola":"Chau"}
-
-
-@app.get("/prueba/{id}")
-async def ruta_prueba_2(id:int):
-    return {"Hola":"chau",
-            "pruebaaaaaa" : id}
-
-
-@app.get("/hola/{id}")
-async def ruta_prueba_3(id:int):
-    return {"HolAAAAAAAAAAAa": id}
+#git status
+#git add ""
+#git commit -m ""
+#git push origin main
 
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -56,18 +46,52 @@ async def countReviews(fecha_inicio_str: str, fecha_fin_str: str):
 
 
 
-@app.get("/sentiment_analysis/{año}")
-async def sentiment_analysis(año:int):
-    
-    '''Esta funcion devuelve una lista con la cantidad de registros de reseñas de usuarios 
-    que se encuentren categorizados con un análisis de sentimiento según el año de lanzamiento.
-        Ejemplo de retorno: {Negative = 182, Neutral = 120, Positive = 278}'''
-    try:
-        df = pd.read_json("DataSets/df_sentiment.json", lines=True)
-        negativos = int(df['cantidad_0'][df['ano']==año].iloc[0])
-        neutros = int(df['cantidad_1'][df['ano']==año].iloc[0])
-        positivos = int(df['cantidad_2'][df['ano']==año].iloc[0])
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        return {"Negativos ": negativos, "Neutros": neutros, "Positivos" : positivos}
+@app.get("/genre/")
+async def genre(genero:str):
+    '''Devuelve el puesto en el que se encuentra un género sobre el ranking de los mismos 
+    analizado bajo la columna PlayTimeForever.'''
+    try:
+        df = pd.read_json("DataSets/df_genre.json", lines=True)
+        genero = genero.lower()  # Convertir a minúsculas
+
+        # Verifico si el género existe
+        if df[df['genres'] == genero].empty:
+            return {"error": f"No se encontraron resultados para el género '{genero}'."}
+
+        result = df['ranking'][df['genres'] == genero].iloc[0]
+        return {"Genero": genero, "Ranking": result}
     except Exception as e:
-        return {"error", e}
+        return {"error": str(e)}
+    
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+@app.get("/userforgenre/")
+async def userforgenre(genero:str):
+    
+    '''Esta funcion devuelve el top 5 de usuarios con más horas de juego 
+    en el género dado, con su URL (del user) y user_id'''
+
+    try:
+        df = pd.read_json("DataSets/df_userforgenre.json", lines=True)
+        genero = genero.lower()  # Convierto a minúsculas
+        ranking = df[['ranking']][df['genres']==genero]
+        user = df[['user_id']][df['genres']==genero]
+        url = df[['user_url']][df['genres']==genero]
+        
+        # Verifico si el genero existe
+        if ranking.empty or user.empty or url.empty:
+            return {"error": f"No se encontraron resultados para el género '{genero}'."}
+        
+        # Creao un diccionario con los resultados
+        resultados = {
+            "Ranking": ranking.values.tolist(),
+            "User_ID": user.values.tolist(),
+            "User_URL": url.values.tolist()
+                    }
+        return resultados
+    
+    except Exception as e:
+        return {"error": str(e)}
