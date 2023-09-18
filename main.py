@@ -30,16 +30,15 @@ async def userdata(user_id : str ):
         df_3 = pd.read_json("DataSets/df_item_user_group.json", lines=True)
         cantidad_item_id = df_3['Cantidad_item_id'][df_3['user_id']==user_id]
 
-        
         # Verifico si el genero existe
         if dinero_gastado.empty or recomendacion.empty or cantidad_item_id.empty:
             return {"error": f"No se encontraron resultados para el usuario '{user_id}'."}
 
         resultado = {
                      "Usuario": user_id,
-                     "Dinero gastado": dinero_gastado.iloc[0],
-                     "Porcentaje de recomendacion": recomendacion.iloc[0],
-                     "Cantidad de items": cantidad_item_id.iloc[0]
+                     "Dinero gastado": float(dinero_gastado.iloc[0]),
+                     "Porcentaje de recomendacion": float(recomendacion.iloc[0]),
+                     "Cantidad de items": int(cantidad_item_id.iloc[0])
                     }
 
         return resultado
