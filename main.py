@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import pandas as pd
+import numpy as np
 
 app = FastAPI()
 
@@ -12,6 +13,12 @@ app = FastAPI()
 #git add ""
 #git commit -m ""
 #git push origin main
+
+@app.get("/")
+async def u():
+    return {"Coloque una /docs"}
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
 @app.get("/userdata/")
@@ -205,6 +212,42 @@ async def sentiment_analysis(año_str:str):
         positivos = int(df['cantidad_2'][df['ano']==año].iloc[0])
 
         return {"Negativos": negativos, "Neutros": neutros, "Positivos" : positivos}
+    
+    except Exception as e:
+        return {"error": str(e)}
+    
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+@app.get("/recomendacion_juego/")
+async def recomendacion_juego(item_id:int):
+    ''' Esta funcion trabaja como un modelo de recomendacion y devuelve 
+    una lista de 5 item (juego) similares al item ingresado
+    '''
+    try:
+        df = pd.read_json("DataSets/df_modelo.json")
+
+        # Verifico que el item este en el DataFrame
+        if item_id not in df.index:
+            return {"error": f"No se encontraron registros para el item {item_id}"}
+
+        columnas = df.columns.tolist()
+
+        # Determino las caracteristicas relevantes de cada item
+        caracteristicas = df[columnas].values
+        # Determino las caracteristicas del item ingresado
+        caract_item = df[df.index == item_id].values[0]
+
+        # Calculo la similitud del coseno con los otros items
+        similitudes = np.dot(caracteristicas, caract_item) / (np.linalg.norm(caracteristicas, axis=1) * 
+                                                            np.linalg.norm(caract_item))
+        
+        # agrego al df una columna que indique las similitudes de cada item con el item ingresado
+        df['Similitudes'] = similitudes
+
+        # Ordeno los items por similitud en orden descendente
+        df = df.sort_values(by='Similitudes', ascending=False)
+
+        return {"Juegos similares recomendados": df.index[1:6].tolist()}
     
     except Exception as e:
         return {"error": str(e)}
