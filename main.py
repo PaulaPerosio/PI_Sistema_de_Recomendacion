@@ -2,30 +2,22 @@ from fastapi import FastAPI
 import pandas as pd
 import numpy as np
 
-app = FastAPI()
 
-#C:\Users\peros\OneDrive\Documentos\Henry\Data Analist\PI 1\venv\Scripts>activate
-#(venv) C:\Users\peros\OneDrive\Documentos\Henry\Data Analist\PI 1>
-#uvicorn main:app --reload
-#http://127.0.0.1:8000
+app = FastAPI(title='Proyecto individual 1: Recomendacion de video juegos',
+            description='Machine Learning Operations (MLOps) by: Paula Perosio')
 
-#git status
-#git add ""
-#git commit -m ""
-#git push origin main
 
 @app.get("/")
-async def u():
-    return {"Coloque una /docs"}
+async def Inicio():
+    return {"API de video juegos. Coloque '/docs' en la barra de direcciones y luego presione enter"}
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
 @app.get("/userdata/")
 async def userdata(user_id : str ):
-    '''Esta funcion devuelve la cantidad de dinero gastado por el usuario, 
-    el porcentaje de recomendación en base a reviews.recommend 
-    y cantidad de items'''
+    '''Devuelve la cantidad de dinero gastado, el porcentaje de recomendación
+    y la cantidad de juegos consumidos por el usuario ingresado'''
 
     try:
         df_1 = pd.read_json("DataSets/df_user_price.json", lines=True)
@@ -58,8 +50,8 @@ async def userdata(user_id : str ):
 
 @app.get("/countreviews/")
 async def countReviews(fecha_inicio_str: str, fecha_fin_str: str):
-    '''Esta funcion devuelve la cantidad de usuarios que realizaron reviews entre las fechas dadas y,
-    el porcentaje de recomendación de los mismos en base a reviews.recommend'''
+    '''Devuelve la cantidad de usuarios que realizaron reseñas y 
+    su porcentaje de recomendación; entre las fechas ingresadas'''
 
     try:
         df = pd.read_json("DataSets/df_countreviews.json", lines=True)
@@ -90,13 +82,15 @@ async def countReviews(fecha_inicio_str: str, fecha_fin_str: str):
         return {"error": str(e)}
 
 
-
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 
 @app.get("/genre/")
 async def genre(genero:str):
-    '''Devuelve el puesto en el que se encuentra un género sobre el ranking de los mismos 
-    analizado bajo la columna PlayTimeForever.'''
+    '''Devuelve el puesto en el que se encuentra el género ingresado 
+    en comparación con los demás géneros 
+    en función a la cantidad de horas que han sido jugadas'''
+    
     try:
         df = pd.read_json("DataSets/df_genre.json", lines=True)
         genero = genero.lower()  # Convertir a minúsculas
@@ -119,11 +113,11 @@ async def genre(genero:str):
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+
 @app.get("/userforgenre/")
 async def userforgenre(genero:str):
-    
-    '''Esta funcion devuelve el top 5 de usuarios con más horas de juego 
-    en el género dado, con su URL (del user) y user_id'''
+    '''Devuelve un top 5 de usuarios y su URL en función 
+    a la cantidad de horas de juego en el género dado'''
 
     try:
         df = pd.read_json("DataSets/df_userforgenre.json", lines=True)
@@ -149,10 +143,12 @@ async def userforgenre(genero:str):
     
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+
 @app.get("/developer/")
 async def developer(desarrollador:str):
-    '''Esta funcion devuelve la cantidad de items y porcentaje de contenido Free por año 
-    según empresa desarrolladora.'''
+    '''Devuelve la cantidad de juegos y el porcentaje de contenido Free por año 
+    de la empresa desarrolladora ingresada'''
+
     try:
         df = pd.read_json("DataSets/df_developer.json", lines=True)
         desarrollador = desarrollador.lower()  # Convierto a minúsculas
@@ -194,9 +190,9 @@ async def developer(desarrollador:str):
 
 @app.get("/sentiment_analysis/")
 async def sentiment_analysis(año_str:str):
-    '''Esta funcion devuelve una lista con la cantidad de registros de reseñas de usuarios 
-    que se encuentren categorizados con un análisis de sentimiento según el año de lanzamiento.
-    '''
+    '''Devuelve la cantidad de reseñas de usuarios positivas, negativas y neutras  
+        según el año de lanzamiento'''
+
     try:
         # Convierto el año a entero
         año = int(año_str)
@@ -218,11 +214,11 @@ async def sentiment_analysis(año_str:str):
     
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+
 @app.get("/recomendacion_juego/")
 async def recomendacion_juego(item_id:int):
-    ''' Esta funcion trabaja como un modelo de recomendacion y devuelve 
-    una lista de 5 item (juego) similares al item ingresado
-    '''
+    ''' Devuelve una recomendación de 5 juegos similares al juego/item ingresado'''
+
     try:
         df = pd.read_json("DataSets/df_modelo.json")
 
