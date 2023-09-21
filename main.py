@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 
 
-app = FastAPI(title='Proyecto individual 1: Recomendacion de video juegos',
-            description='Machine Learning Operations (MLOps) by: Paula Perosio')
+app = FastAPI(title='Información y recomendación de video juegos',
+            description='Proyecto individual 1: Machine Learning Operations (MLOps), by: Paula Perosio')
 
 
 @app.get("/")
@@ -68,7 +68,7 @@ async def countReviews(fecha_inicio_str: str, fecha_fin_str: str):
             return {"error": f"La fecha '{fecha_fin_str}' de fin no existe."}
 
         condicion = (df['posted_ok'] >= fecha_inicio_str) & (df['posted_ok'] <= fecha_fin_str)
-        recomendacion = df[condicion][df[condicion]['recommend']==True].shape[0]
+        recomendacion = df[condicion][df[condicion]['recommend']==1].shape[0]
         porc_recomendacion = recomendacion / df[condicion].shape[0] * 100
 
         resultado = {
