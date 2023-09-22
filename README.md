@@ -31,8 +31,8 @@
   - **FastAPI**: Librería utilizada para crear la API.
   - **uvicorn**: Servidor para interactuar con la API.
   - **Render**: Plataforma utilizada para el despliegue de la aplicación.
-  - **Base de datos inicial**: los datos utilizados en este proyecto se encuentran en el siguiente **([Link](https://drive.google.com/drive/folders/1HqBG2-sUkz_R3h1dZU5F2uAzpRn7BSpj))**. Son tres archivos en formato JSON, comprimidos con GZ los cuales se colocaron dentro de una carpeta llamada **Datos** 
-  - **DataSet**: Carpeta llamada DataSets donde se guardarán los archivos consumidos por las funciones **([Link](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/tree/main/DataSets))**
+  - **Datos**: Crear una carpeta llamada **Datos** y colocar los archivos del siguiente enlace **([Link](https://drive.google.com/drive/folders/1L1JMFUtNDDaiLh7_IA5JwunKxdey80Q4?usp=sharing))**. Estos son los datos iniciales utilizados en este proyecto, los cuales estan en formato JSON, comprimidos con GZ.
+  - **DataSet**: Crear una carpeta llamada **DataSets** donde se guardarán los archivos consumidos por las funciones **([Link](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/tree/main/DataSets))**
   - **Requirements**: requerimientos para el funcionamiento de la API **([Link](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/tree/main/requirements.txt))**
 
 </p>
@@ -51,7 +51,7 @@
 
 ## Etapas del proyecto
 
-### 1. Extracción, Transformación y Carga de datos ([ETL](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/ETL.ipynb))
+### 1. Analisis Exploratorio, Extracción, Transformación y Carga de datos ([ETL-EDA](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/ETL-EDA.ipynb))
 
 <p align="justify">
   
@@ -67,6 +67,24 @@
   - Trabajar en cada columna de manera específica según lo necesario y convertirlas a un solo tipo de dato con previas transformaciones o eliminaciones de registros puntuales
   - Eliminar registros donde varios datos son nulos, generando que la información requerida para las funciones o el modelo sea insuficiente
   - Evaluar los requerimientos de cada función de manera independiente y realizar un ETL puntual para generar nuevos archivos JSON de mejor tamaño que serán consumidos por las funciones de la API
+
+  # Análisis Exploratorio de Datos
+
+
+  Antes de abordar el entrenamiento de modelos de Machine Learning, se realizó un análisis exploratorio de datos (EDA). Este proceso involucró la investigación de relaciones entre variables, la identificación de outliers y patrones en los datos. Se ajustaron los datos para que nuestro modelo de Machine Learning pueda funcionar correctamente.
+  
+  Desarrollo de un análisis exploratorio de datos y visualización de los mismos. Algunas de las técnicas utilizadas incluyen:
+
+- Tipo de dato de cada columna.
+- Cantidad de filas y columnas en el conjunto de datos.
+- Identificación de valores nulos en cada columna.
+- Descripción estadística de los datos numéricos.
+- Descripción estadística de los datos de texto.
+- Matriz de correlación para identificar relaciones entre variables.
+- Detección de outliers.
+- Visualización de datos mediante histogramas, gráficos de dispersión y nube de palabras.
+
+
 </p>
 
 
@@ -101,26 +119,7 @@
 </p>
 
 
-### 4. Análisis Exploratorio de Datos ( [EDA](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/EDA.ipynb))
-
-<p align="justify">
-  Antes de abordar el entrenamiento de modelos de Machine Learning, se realizó un análisis exploratorio de datos (EDA). Este proceso involucró la investigación de relaciones entre variables, la identificación de outliers y patrones en los datos. Se ajustaron los datos para que nuestro modelo de Machine Learning pueda funcionar correctamente.
-  
-  Desarrollo de un análisis exploratorio de datos y visualización de los mismos. Algunas de las técnicas utilizadas incluyen:
-
-- Tipo de dato de cada columna.
-- Cantidad de filas y columnas en el conjunto de datos.
-- Identificación de valores nulos en cada columna.
-- Descripción estadística de los datos numéricos.
-- Descripción estadística de los datos de texto.
-- Matriz de correlación para identificar relaciones entre variables.
-- Detección de outliers.
-- Visualización de datos mediante histogramas, gráficos de dispersión y nube de palabras.
-
-</p>
-
-
-### 5. Desarrollo del Modelo de Machine Learning ( [Main](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/main.py))
+### 4. Desarrollo del Modelo de Machine Learning ( [Main](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/main.py))
 
 <p align="justify">
   Se desarrolló la función correspondiente al modelo de recomendación por similitud de relación ítem-ítem, es decir, el input es un juego y el output es una lista de juegos recomendados por similitud.
@@ -139,7 +138,7 @@
 </p>
 
 
-### 6. Despliegue ( [API](https://sistema-de-recomendacion-458k.onrender.com))
+### 5. Despliegue ( [API](https://sistema-de-recomendacion-458k.onrender.com/docs))
 
 <p align="justify">
   Implementación de la API utilizando la plataforma Render. Esto permite la interacción de los usuarios con la API desarrollada, pudiendo así acceder y realizar consultas o pedidos de recomendación de videojuegos.
@@ -148,9 +147,9 @@
 
 
 ## **Enlaces**
-+ Acceso a la API desarrollada [API](https://sistema-de-recomendacion-458k.onrender.com).
++ Acceso a la API desarrollada [Render](https://sistema-de-recomendacion-458k.onrender.com/docs).
 
-+ Presentación de la API y su funcionamiento [Video](......).
++ Presentación de la API y su funcionamiento [Video](https://drive.google.com/file/d/11ytwIvUTu8rfUJiFiIrOKUZIHZ1-QnxO/view?usp=sharing).
 
 
 ## **Contacto**
