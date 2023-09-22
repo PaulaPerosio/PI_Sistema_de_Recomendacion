@@ -26,10 +26,10 @@
   - **json/Gzip/ast**: Librerías de Python utilizadas para la ingesta de los datos.
   - **Numpy/Pandas**: Librerías de Python utilizadas para el desarrollo del proyecto en general.
   - **TextBlob**: Librería utilizada para el análisis de sentimientos.
-  - **datetime**: Librería utilizada para la transformación de datos de fechas.
+  - **Datetime**: Librería utilizada para la transformación de datos de fechas.
   - **Matplotlib**: Librería utilizada para la visualización de datos y sus relaciones.
   - **FastAPI**: Librería utilizada para crear la API.
-  - **uvicorn**: Servidor para interactuar con la API.
+  - **Uvicorn**: Servidor para interactuar con la API.
   - **Render**: Plataforma utilizada para el despliegue de la aplicación.
   - **Datos**: Crear una carpeta llamada **Datos** y colocar los archivos del siguiente enlace **([Link](https://drive.google.com/drive/folders/1L1JMFUtNDDaiLh7_IA5JwunKxdey80Q4?usp=sharing))**. Estos son los datos iniciales utilizados en este proyecto, los cuales estan en formato JSON, comprimidos con GZ.
   - **DataSet**: Crear una carpeta llamada **DataSets** donde se guardarán los archivos consumidos por las funciones **([Link](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/tree/main/DataSets))**
@@ -54,36 +54,14 @@
 ### 1. Analisis Exploratorio, Extracción, Transformación y Carga de datos ([ETL-EDA](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/ETL-EDA.ipynb))
 
 <p align="justify">
+
+  De manera alternada e iterativa, se realizó el análisis exploratorio de datos (EDA) y el proceso de extracción, transformación (ETL).
   
-  Se realizó el proceso de extracción, transformación y carga de nuevos archivos dentro de la carpeta **([DataSets](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/tree/main/DataSets))**.
-  Se trabajó cada uno de los archivos iniciales por separado. Los mismos estaban en formato JSON comprimidos y tenían columnas con datos anidados. Algunos de los pasos realizados fueron:
-  - Abrir y leer los archivos
-  - Desanidar los campos
-  - Evaluar de manera exploratoria inicial el contenido de los archivos
-  - Seleccionar las columnas según los requerimientos de las funciones a desarrollar posteriormente
-  - Eliminar registros completamente nulos o duplicados
-  - Analizar sentimientos con NLP utilizando la librería TextBlob a partir de las reseñas generadas por usuarios respecto a los juegos. '0' si es malo, '1' si es neutral y '2' si es positivo
-  - Transformar y unificar los formatos en las columnas con fechas
-  - Trabajar en cada columna de manera específica según lo necesario y convertirlas a un solo tipo de dato con previas transformaciones o eliminaciones de registros puntuales
-  - Eliminar registros donde varios datos son nulos, generando que la información requerida para las funciones o el modelo sea insuficiente
-  - Evaluar los requerimientos de cada función de manera independiente y realizar un ETL puntual para generar nuevos archivos JSON de mejor tamaño que serán consumidos por las funciones de la API
+  Como parte del proceso de EDA, se evaluó la presencia de nulos, duplicados, outliers, tipos y cantidad de datos, así como la descripción estadística de los mismos. También se trabajó con la visualización de datos y el análisis de sus relaciones mediante histogramas, gráficos de dispersión, entre otros.
 
-  # Análisis Exploratorio de Datos
+  Como parte del proceso de ETL, se desanidaron datos, se eliminaron registros nulos, duplicados y outliers. Además, se realizaron transformaciones de datos específicas necesarias para el diseño de las funciones.
 
-
-  Antes de abordar el entrenamiento de modelos de Machine Learning, se realizó un análisis exploratorio de datos (EDA). Este proceso involucró la investigación de relaciones entre variables, la identificación de outliers y patrones en los datos. Se ajustaron los datos para que nuestro modelo de Machine Learning pueda funcionar correctamente.
-  
-  Desarrollo de un análisis exploratorio de datos y visualización de los mismos. Algunas de las técnicas utilizadas incluyen:
-
-- Tipo de dato de cada columna.
-- Cantidad de filas y columnas en el conjunto de datos.
-- Identificación de valores nulos en cada columna.
-- Descripción estadística de los datos numéricos.
-- Descripción estadística de los datos de texto.
-- Matriz de correlación para identificar relaciones entre variables.
-- Detección de outliers.
-- Visualización de datos mediante histogramas, gráficos de dispersión y nube de palabras.
-
+  El resultado de este proceso de EDA y ETL fue preparar los datos y generar nuevos archivos JSON de menor tamaño que serán consumidos por las funciones de la API **([DataSets](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/tree/main/DataSets))**.
 
 </p>
 
@@ -91,9 +69,7 @@
 ### 2. Creación de funciones ([Main](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/main.py))
 
 <p align="justify">
-  Se desarrollaron 6 funciones para diferentes endpoints que se consumirán en la API y brindarán información específica de la base de datos de videojuegos utilizada; dichas funciones utilizan los archivos JSON generados anteriormente.
-
-  También se trabajó en el manejo de errores dentro de cada función. Para ello, se tuvieron en cuenta las posibilidades donde los inputs sean ingresados en formatos no adecuados o los inputs ingresados no existan dentro de la base de datos. También se capturará cualquier otro posible error generado durante el uso de la API.
+  Se desarrollaron 6 funciones para diferentes endpoints que se consumirán en la API y brindarán información específica de la base de datos de videojuegos utilizada; dichas funciones utilizan los archivos JSON generados anteriormente. Se trabajó en el manejo de errores dentro de cada función y se considero la posibilidad de datos de entrada erroneos, que no existan en la base de datos o cualquier otro posible error generado durante el uso de la API.
 
   Funciones desarrolladas:
 
@@ -122,19 +98,10 @@
 ### 4. Desarrollo del Modelo de Machine Learning ( [Main](https://github.com/PaulaPerosio/PI_Sistema_de_Recomendacion/blob/main/main.py))
 
 <p align="justify">
-  Se desarrolló la función correspondiente al modelo de recomendación por similitud de relación ítem-ítem, es decir, el input es un juego y el output es una lista de juegos recomendados por similitud.
+  Se desarrolló la función correspondiente al modelo de recomendación por similitud de relación ítem-ítem, es decir, el input es un juego y el output es una lista de juegos recomendados por similitud. Se trabajó utilizando la función de similitud del coseno.
 
   + def **recomendacion_juego(*`item_id`: int*)** Devuelve una recomendación de 5 juegos similares al juego/item ingresado.
 
-  Pasos dentro de la función:
-  - Ingestar los datos.json cargados previamente; con géneros y años de lanzamiento en las columnas, e item/juego en las filas.
-  - Determinar las características relevantes de cada juego del DataFrame y del juego ingresado (input).
-  - Calcular el valor de similitud entre las características del input con las características de los demás juegos, utilizando el modelo de similitud del coseno.
-  - Incorporar una nueva columna con los valores de similitud entre el input y cada juego del DataFrame.
-  - Reordenar descendentemente el DataFrame respecto al valor de similitud.
-  - Retornar una lista con los 5 juegos con mayor valor de similitud al juego ingresado.
-  - Implementar código necesario para el manejo de errores dentro de la función.
-  - Deploy del modelo de recomendación utilizando Render.
 </p>
 
 
